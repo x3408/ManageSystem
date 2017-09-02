@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
 import java.util.Properties;
 
 public class SqlHelper {
@@ -23,6 +24,13 @@ public class SqlHelper {
 	private static PreparedStatement ps = null;
 	private static Statement st = null;
 	private static Properties prop = new Properties();
+	
+	private static int initConnectCount = 3;
+	private static int maxConnectCount = 10;
+	private static int currentConnectCount = 0;
+	
+	LinkedList<Connection> list = new LinkedList<Connection>();
+	
 	public static Connection getConn() {
 		return conn;
 	}
@@ -50,15 +58,18 @@ public class SqlHelper {
 	}
 	
 	
-	private SqlHelper() {}
+	private SqlHelper() {
+		for(int i=0; i<initConnectCount; i++) {
+			list.addLast(createConnection());
+			currentConnectCount++;
+		}
+	}
 	
 	
 	public static SqlHelper getInstance() {
 		return instance;
 	}
-	
-	
-	public Connection getConnection() {
+	public Connection createConnection() {
 		link = prop.getProperty("link");
 		name = prop.getProperty("name");
 		password = prop.getProperty("password");
@@ -70,44 +81,43 @@ public class SqlHelper {
 		return conn;
 	}
 	
-	
-	public static void free(Connection conn, Statement st, ResultSet rs) {
-		try {
-			if (conn != null)
-				conn.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (st != null)
-					st.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (rs != null)
-						rs.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+	public Connection getConnection() {
+		if(list.size() > 0)
+			return list.getFirst();
+		if(currentConnectCount < maxConnectCount)
+			return createConnection();
+		throw new ExceptionInInitializerError("连接数不够");
 	}
 	
 	
-	public static void free(Connection conn,Statement st){
+	public static void free(Connection conn, Statement st, ResultSet rs) {
 		try {
-			if (conn != null)
-				conn.close();
+			if (rs != null)
+				rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			try {
-				if (st != null)
-					st.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			if (ps != null)
+				try {
+					ps.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				} finally {
+					if (conn != null)
+						new MyConnection(conn, instance);
+				}
+		}
+	}
+	
+	public static void free(Connection conn,Statement st){
+		try {
+			if (st != null)
+				st.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (conn != null)
+				new MyConnection(conn, instance);
 		}
 	}
 	/**

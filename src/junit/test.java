@@ -1,4 +1,5 @@
 package junit;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -6,7 +7,6 @@ import java.sql.SQLException;
 
 import org.junit.Test;
 
-import com.xc.Service.*;
 import com.xc.domain.Student;
 import com.xc.util.SqlHelper;
 public class test {
