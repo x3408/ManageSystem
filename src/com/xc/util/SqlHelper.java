@@ -103,8 +103,12 @@ public class SqlHelper {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				} finally {
-					if (conn != null)
-						new MyConnection(conn, instance);
+					try {
+						if (conn != null)
+							new MyConnection(conn, instance).close();
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
 				}
 		}
 	}
@@ -116,8 +120,12 @@ public class SqlHelper {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			if (conn != null)
-				new MyConnection(conn, instance);
+			try {
+				if (conn != null)
+					new MyConnection(conn, instance).close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 		}
 	}
 	/**
