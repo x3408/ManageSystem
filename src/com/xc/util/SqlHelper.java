@@ -82,8 +82,10 @@ public class SqlHelper {
 	}
 	
 	public Connection getConnection() {
-		if(list.size() > 0)
+		if(list.size() > 0){
+			currentConnectCount--;
 			return list.getFirst();
+		}
 		if(currentConnectCount < maxConnectCount)
 			return createConnection();
 		throw new ExceptionInInitializerError("连接数不够");
