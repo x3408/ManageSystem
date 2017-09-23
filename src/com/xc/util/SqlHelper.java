@@ -25,9 +25,11 @@ public class SqlHelper {
 	private static Statement st = null;
 	private static Properties prop = new Properties();
 	
-	private static int initConnectCount = 3;
-	private static int maxConnectCount = 10;
-	private static int currentConnectCount = 0;
+	protected static int initConnectCount = 3;
+	protected static int maxConnectCount = 10;
+	protected static int currentConnectCount = 0;
+	
+	private static MyConnectionHandler warpedConn = null;
 	
 	LinkedList<Connection> list = new LinkedList<Connection>();
 	
@@ -65,7 +67,6 @@ public class SqlHelper {
 		}
 	}
 	
-	
 	public static SqlHelper getInstance() {
 		return instance;
 	}
@@ -73,12 +74,16 @@ public class SqlHelper {
 		link = prop.getProperty("link");
 		name = prop.getProperty("name");
 		password = prop.getProperty("password");
+//		MyConnection warpedConn = null;
+		
 		try {
 			conn = DriverManager.getConnection(link,name,password);
+//			warpedConn = new MyConnection(conn,this);
+			warpedConn = new MyConnectionHandler(this);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return conn;
+		return warpedConn.bind(conn);
 	}
 	
 	public Connection getConnection() {
@@ -108,6 +113,7 @@ public class SqlHelper {
 					try {
 						if (conn != null)
 							new MyConnection(conn, instance).close();
+							
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}

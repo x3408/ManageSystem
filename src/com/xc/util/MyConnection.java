@@ -67,7 +67,12 @@ class MyConnection implements Connection{
 	}
 	@Override
 	public void close() throws SQLException {
-		helper.list.addLast(conn);
+		helper.currentConnectCount--;
+		if(helper.currentConnectCount < helper.maxConnectCount)
+			helper.list.addLast(conn);
+		else {
+			
+		}
 	}
 	@Override
 	public boolean isClosed() throws SQLException {
