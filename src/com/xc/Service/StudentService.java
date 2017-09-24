@@ -21,7 +21,7 @@ public class StudentService extends AbstractDao{
 		Student stu = null;
 		ResultSet rs = null;
 		String sql = "select id from student where (pwd = ?) and (name = ?)";
-		Object [] args = new Object[] {name, pwd};
+		Object [] args = new Object[] {pwd, name};
 		rs = query(sql, args);
 		try {
 			if(rs.next()) {
