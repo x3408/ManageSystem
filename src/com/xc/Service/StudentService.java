@@ -94,66 +94,27 @@ public class StudentService extends AbstractDao{
 		return i;
 	}
 	
-	
-	/*public TreeMap<Integer,Integer> lookScore(int studentId) {
-		String sql = "select courseId,score from opinion where studentId = ?";
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		TreeMap<Integer,Integer> arr = new TreeMap<Integer,Integer>();
-		try {
-			conn = SqlHelper.getInstance().getConnection();
-			ps = conn.prepareStatement(sql);
-			ps.setInt(1, studentId);
-			
-			rs = ps.executeQuery();
-			
-			while(rs.next()) {
-				arr.put(rs.getInt(1), rs.getInt(2));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			SqlHelper.free(conn, ps, rs);
-		}
-		return arr;
-	}*/
-	
-	
+	/**
+	 * 
+	 * @param studentId
+	 * @return 返回含有课程名，成绩的集合
+	 */
 	public TreeMap<String,Integer> lookScore(int studentId) {
+		TreeMap<String, Integer> map = new TreeMap<String, Integer>();
 		ResultSet rs = null;
-		String sql = "select id,score from score where studentId = ?";
+		String sql = "select s.score,c.name from score as s,course as c where s.id=c.id and studentId=?";
 		Object [] args = new Object[] {studentId};
 		rs = query(sql, args);
-		TreeMap<String,Integer> arr = new TreeMap<String,Integer>();
+		
 		try {
-			while(rs.next()){
-				for(Iterator<String> it = lookCourseName(rs.getInt("id")).iterator();it.hasNext();) {
-					String names = it.next();
-					arr.put(names, rs.getInt("score"));
-				}		
+			while(rs.next()) {
+				map.put(rs.getString("name"), rs.getInt("score"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return arr;
-	}
-	
-	
-	private ArrayList<String> lookCourseName(int id) {
-		ResultSet rs = null;
-		String sql = "select name from course where id = ?";
-		Object [] args = new Object[] {id};
-		rs = query(sql, args);
-		ArrayList<String> names = new ArrayList<String>();
-		try {
-			while (rs.next()){
-				names.add(rs.getString("name"));			
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return names;
+		
+		return map;
 	}
 	
 	
