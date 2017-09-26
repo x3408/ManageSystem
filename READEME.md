@@ -1,2 +1,3 @@
 学生成绩管理系统
 属于个人练习
+9.23问题：有关于dbcp无法使用dataSource对象获取Connection对象;
