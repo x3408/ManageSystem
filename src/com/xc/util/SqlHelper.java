@@ -21,7 +21,7 @@ public class SqlHelper {
 //	private static String password = null;
 	
 	private static SqlHelper instance = new SqlHelper();
-	
+	private static DataSource dataSource;
 	private static Connection conn = null;
 
 	private static ResultSet rs = null;
@@ -86,10 +86,9 @@ public class SqlHelper {
 			e.printStackTrace();
 		}
 		return warpedConn.bind(conn);*/
-		DataSource dataSource;
 		Connection conn = null;
 		try {
-			dataSource = BasicDataSourceFactory.createDataSource(prop);
+			getDataSource();
 			
 			
 			conn = dataSource.getConnection();
@@ -100,6 +99,15 @@ public class SqlHelper {
 		
 	}
 	
+	public static DataSource getDataSource() {
+		try {
+			if(dataSource == null)
+				dataSource = BasicDataSourceFactory.createDataSource(prop);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return dataSource;
+	}
 	public Connection getConnection() {
 		if(list.size() > 0){
 			currentConnectCount--;

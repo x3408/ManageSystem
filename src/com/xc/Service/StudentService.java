@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
 
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+
 import com.xc.domain.Student;
+import com.xc.util.SqlHelper;
 
 public class StudentService extends AbstractDao{
 	/**
@@ -39,10 +43,12 @@ public class StudentService extends AbstractDao{
  */
 	public Student getStudent(int studentId) {
 		Student stu = new Student();
-		ResultSet rs = null;
+//		ResultSet rs = null;
 		String sql = "select * from student where id = ?";
 		Object [] args = new Object[] {studentId};
-		rs = query(sql, args);
+		JdbcTemplate jdbc = new JdbcTemplate(SqlHelper.getDataSource());			//Spring
+		stu = (Student)jdbc.queryForObject(sql, args, new BeanPropertyRowMapper(Student.class));
+		/*rs = query(sql, args);
 		try {
 			if(rs.next()) {
 				stu.setID(rs.getInt("id"));
@@ -56,7 +62,7 @@ public class StudentService extends AbstractDao{
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 		return stu;
 	}
