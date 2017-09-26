@@ -10,11 +10,15 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.Properties;
 
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp2.BasicDataSourceFactory;
+
 public class SqlHelper {
-	private static String url = null;
-	private static String link = null;
-	private static String name = null;
-	private static String password = null;
+//	private static String url = null;
+//	private static String link = null;
+//	private static String name = null;
+//	private static String password = null;
 	
 	private static SqlHelper instance = new SqlHelper();
 	
@@ -29,7 +33,7 @@ public class SqlHelper {
 	protected static int maxConnectCount = 10;
 	protected static int currentConnectCount = 0;
 	
-	private static MyConnectionHandler warpedConn = null;
+//	private static MyConnectionHandler warpedConn = null;
 	
 	LinkedList<Connection> list = new LinkedList<Connection>();
 	
@@ -50,11 +54,9 @@ public class SqlHelper {
 	static {
 		try {
 			prop.load(SqlHelper.class.getClassLoader().getResourceAsStream("util.properties"));
-			url = prop.getProperty("url");
-			Class.forName(url);
+//			url = prop.getProperty("url");
+//			Class.forName(url);
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
@@ -71,7 +73,7 @@ public class SqlHelper {
 		return instance;
 	}
 	public Connection createConnection() {
-		link = prop.getProperty("link");
+		/*link = prop.getProperty("link");
 		name = prop.getProperty("name");
 		password = prop.getProperty("password");
 //		MyConnection warpedConn = null;
@@ -83,7 +85,19 @@ public class SqlHelper {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return warpedConn.bind(conn);
+		return warpedConn.bind(conn);*/
+		DataSource dataSource;
+		Connection conn = null;
+		try {
+			dataSource = BasicDataSourceFactory.createDataSource(prop);
+			
+			
+			conn = dataSource.getConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return conn;
+		
 	}
 	
 	public Connection getConnection() {
@@ -112,7 +126,8 @@ public class SqlHelper {
 				} finally {
 					try {
 						if (conn != null)
-							new MyConnection(conn, instance).close();
+//							new MyConnection(conn, instance).close();
+							conn.close();
 							
 						} catch (SQLException e) {
 							e.printStackTrace();
@@ -130,7 +145,8 @@ public class SqlHelper {
 		} finally {
 			try {
 				if (conn != null)
-					new MyConnection(conn, instance).close();
+//					new MyConnection(conn, instance).close();
+					conn.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
